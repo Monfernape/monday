@@ -11,7 +11,7 @@ application.use((req: Request, res: Response, next: NextFunction) => {
       next();
     })
 
-const port = 3001;
+const port = process.env.PORT || 3001;
 
 application.post("/monday", (req: Request, res: Response) => {
   console.log("Body", req.body);
