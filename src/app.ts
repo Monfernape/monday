@@ -13,12 +13,7 @@ application.use((req: Request, res: Response, next: NextFunction) => {
 
 const port = process.env.PORT || 3001;
 
-application.post("/monday", (req: Request, res: Response) => {
-  console.log("Body", req.body);
-  res.status(201).send(req.body);
-});
-
-application.post("/item-change", (req: Request, res: Response) => {
+application.post("/status-change", (req: Request, res: Response) => {
   console.log("Body", req.body);
   res.status(200).send(req.body);
 });
