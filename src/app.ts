@@ -1,6 +1,6 @@
 import express, { Application, Request, Response, NextFunction } from "express";
-import nodeFetch from "node-fetch";
 import cors from "cors";
+import { RestClient } from "typed-rest-client/RestClient";
 
 const application: Application = express();
 application.use(express.json());
@@ -13,27 +13,18 @@ application.use((req: Request, res: Response, next: NextFunction) => {
 });
 
 const port = process.env.PORT || 3001;
+const api = new RestClient(undefined, 'https://api.monday.com/v2')
 
-application.post("/status-change", (req: Request, res: Response) => {
+application.post("/status-change", async (req: Request, res: Response) => {
   console.log("Body", req.body.event);
-  nodeFetch("https://api.monday.com/v2", {
-    method: "post",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: "YOUR_API_KEY_HERE",
-    },
-    body: JSON.stringify({
-      query: `query { assets (ids: [${req.body.event.pulseId}]) { id name url }}`,
-    }),
-  })
-    .then((response) => {
-      console.log("Item Response", response);
-      res.status(200).send(req.body);
-    })
-    .catch((error) => {
-      console.log("Item Error", error);
-      res.status(500).send(error);
-    });
+  try {
+    const item = await api.create('/', JSON.stringify({
+      query: `query { assets (ids: [${req.body.event.pulseId}]) { id name url }}`
+    }))
+    res.status(200).send(item)
+  } catch (error) {
+    res.status(500).send(error)
+  }
 });
 
 application.listen(port, function () {
